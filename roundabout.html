@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RoadBook Image Creator</title>
+    </head>
+    <body>
+        <div id="canva_div">
+        </div>
+        <button onclick="setup()">clean</button>
+        <button onclick="copy_to_clip()">copy</button>
+        <button onclick="download()">download</button>
+        <script src="https://cdn.jsdelivr.net/npm/p5@1.5.0/lib/p5.js"></script>
+        <script src="common.js"></script>
+        <script>
+var ROUNDABOUT_DIAMETER = CANVA_SIZE / 4;
+
+var middle = CANVA_SIZE / 2;
+var output_count;
+
+var canva;
+function setup() {
+    // Create canva
+    canva = createCanvas(CANVA_SIZE, CANVA_SIZE);
+    canva.parent("canva_div");
+
+    translate(middle, middle)
+
+    // Draw the roundabout itself
+    fill(255);
+    strokeWeight(STROKE_WEIGHT);
+    ellipse(0, 0, ROUNDABOUT_DIAMETER, ROUNDABOUT_DIAMETER);
+    // Draw the starting circle
+    fill(0);
+    ellipse(0, OUTPUT_RADIUS, STROKE_WEIGHT, STROKE_WEIGHT);
+    // Link the circle and the roundabout
+    line(0, OUTPUT_RADIUS, 0, ROUNDABOUT_DIAMETER / 2);
+    output_count = 0;
+}
+
+function draw() {
+    translate(CANVA_SIZE / 2, CANVA_SIZE / 2)
+    fill(0);
+    if (mouseIsPressed) {
+        if (mouseClicked) {
+            return;
+        }
+        if (mouseX == middle && mouseY == middle || mouseX > CANVA_SIZE || mouseY > CANVA_SIZE) {
+            // Do nothing
+            return
+        }
+        mouseClicked = true;
+        let x = mouseX - middle;
+        let y = mouseY - middle;
+
+        let distance = sqrt(x * x + y * y);
+
+        let x_ra = x * (ROUNDABOUT_DIAMETER / 2) / distance;
+        let y_ra = y * (ROUNDABOUT_DIAMETER / 2) / distance;
+
+        let x_op = x * OUTPUT_RADIUS / distance;
+        let y_op = y * OUTPUT_RADIUS / distance;
+
+        if (output_count == 0) {
+            strokeWeight(STROKE_WEIGHT);
+            arrow_head(x_ra, y_ra, x_op, y_op);
+        }
+        else {
+            strokeWeight(STROKE_WEIGHT_UNSELECTED);
+        }
+        line(x_ra, y_ra, x_op, y_op);
+
+        output_count++;
+    }
+    if (!mouseIsPressed) {
+        if (!mouseClicked) {
+            return;
+        }
+        mouseClicked = false;
+    }
+}
+        </script>
+    </body>
+</html>

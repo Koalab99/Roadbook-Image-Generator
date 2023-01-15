@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RoadBook Image Creator</title>
+    </head>
+    <body>
+        <div id="canva_div">
+        </div>
+        <button onclick="setup()">clean</button>
+        <button onclick="copy_to_clip()">copy</button>
+        <button onclick="download()">download</button>
+        <script src="https://cdn.jsdelivr.net/npm/p5@1.5.0/lib/p5.js"></script>
+        <script src="common.js"></script>
+        <script>
+
+var middle = CANVA_SIZE / 2;
+var output_count;
+
+var canva;
+var hold = false;
+var old_x = middle;
+var old_y = middle + OUTPUT_RADIUS;
+
+function setup() {
+    // Create canva
+    canva = createCanvas(CANVA_SIZE, CANVA_SIZE);
+    canva.parent("canva_div");
+
+    translate(middle, middle)
+
+    fill(0)
+    strokeWeight(STROKE_WEIGHT);
+    line(0, 0, 0, OUTPUT_RADIUS);
+    output_count = 0;
+    hold = false;
+}
+
+function draw() {
+    translate(CANVA_SIZE / 2, CANVA_SIZE / 2)
+    fill(0);
+    if (mouseIsPressed) {
+        if (mouseClicked) {
+            return;
+        }
+        if (mouseX == middle && mouseY == middle || mouseX > CANVA_SIZE || mouseY > CANVA_SIZE) {
+            // Do nothing
+            return
+        }
+        mouseClicked = true;
+        let x = mouseX - middle;
+        let y = mouseY - middle;
+
+        let distance = sqrt(x * x + y * y);
+
+        let x_op = x * OUTPUT_RADIUS / distance;
+        let y_op = y * OUTPUT_RADIUS / distance;
+
+        if (output_count == 0) {
+            strokeWeight(STROKE_WEIGHT);
+            line(0, 0, x_op, y_op);
+            arrow_head(0, 0, x_op, y_op);
+        }
+        else if(hold) {
+            strokeWeight(STROKE_WEIGHT_UNSELECTED);
+            line(old_x - middle, old_y - middle, mouseX - middle, mouseY - middle);
+            hold = false;
+        }
+        else {
+            old_x = mouseX;
+            old_y = mouseY;
+            hold = true;
+        }
+
+        output_count++;
+    }
+    if (!mouseIsPressed) {
+        if (!mouseClicked) {
+            return;
+        }
+        mouseClicked = false;
+    }
+}
+        </script>
+    </body>
+</html>
